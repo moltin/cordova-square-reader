@@ -1,0 +1,19 @@
+{
+  "name": "moltin-cordova-plugin-square-reader",
+  "version": "0.0.1",
+  "description": "Cordova Plugin to interface with the Square Reader SDK",
+  "cordova": {
+    "id": "moltin-cordova-plugin-square-reader",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "author": "Craig Tweedy",
+  "license": "MIT"
+}

@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="moltin-cordova-plugin-square-reader" version="0.0.1" 
+    xmlns="http://apache.org/cordova/ns/plugins/1.0" 
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <name>MoltinCordovaSquareReader</name>
+
+    <dependency id="cordova-plugin-add-swift-support" version="1.7.2"/>
+
+    <js-module name="MoltinCordovaSquareReader" src="www/MoltinCordovaSquareReader.js">
+        <clobbers target="MoltinCordovaSquareReader" />
+    </js-module>
+
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="MoltinCordovaSquareReader">
+                <param name="ios-package" value="MoltinCordovaSquareReader" />
+            </feature>
+        </config-file>
+        <source-file src="src/ios/MoltinCordovaSquareReader.swift" />
+    </platform>
+    
+</plugin>
