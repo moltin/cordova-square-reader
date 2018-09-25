@@ -1,5 +1,5 @@
 {
-  "name": "moltin-cordova-plugin-square-reader",
+  "name": "@moltin/cordova-plugin-square-reader",
   "version": "0.0.1",
   "description": "Cordova Plugin to interface with the Square Reader SDK",
   "cordova": {

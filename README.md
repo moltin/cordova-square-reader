@@ -4,11 +4,11 @@ A Cordova plugin to interface with the native Square Reader POS SDKs.
 
 # Install
 
-`$ cordova plugin add moltin-cordova-plugin-square-reader`
+`$ cordova plugin add @moltin/cordova-plugin-square-reader`
 
 `$ cordova platform ios prepare` 
 
-## Install the Square SDK
+## Install the Square SDK
 
 At the moment the installation process for the library does not install the Square Reader SDK's to your platforms. You'll need to follow the Square Reader SDK installation for your platform of choice - right now we only support [iOS](https://docs.connect.squareup.com/payments/readersdk/setup-ios)
 
