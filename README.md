@@ -4,7 +4,7 @@ A Cordova plugin to interface with the native Square Reader POS SDKs.
 
 # Install
 
-`$ cordova plugin add cordova-square-reader`
+`$ cordova plugin add moltin-cordova-plugin-square-reader`
 
 `$ cordova platform ios prepare` 
 
