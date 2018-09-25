@@ -15,5 +15,8 @@
     "cordova-ios"
   ],
   "author": "Craig Tweedy",
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }
