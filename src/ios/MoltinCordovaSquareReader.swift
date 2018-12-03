@@ -58,10 +58,9 @@ import AVKit
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         if status == .authorizedAlways || status == .authorizedWhenInUse {
             self.locationPermissionCallback?(true)
-            return
+        } else if status == .restricted || status == .denied {
+            self.locationPermissionCallback?(false)
         }
-
-        self.locationPermissionCallback?(false)
     }
     
     func retrieveAuthorizationCode(command: CDVInvokedUrlCommand) -> String {
