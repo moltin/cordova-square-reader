@@ -4,7 +4,7 @@ A Cordova plugin to interface with the native Square Reader POS SDKs.
 
 # Install
 
-`$ cordova plugin add @moltin/cordova-plugin-square-reader`
+`$ cordova plugin add @f3/cordova-plugin-square-reader`
 
 `$ cordova platform ios prepare` 
 
@@ -22,11 +22,7 @@ Set up the Square Reader SDK
 
 ```ts
 window['squarereader'].setup(() => {
-    let params = {
-        "authCode": "<YOUR AUTH CODE>"
-    };
-
-    window['squarereader'].authorizeReaderSDKIfNeeded(params, () => {
+    window['squarereader'].authorizeReaderSDKIfNeeded(() => {
         alert("Authorised!")
     },
     (err) => {
@@ -36,6 +32,8 @@ window['squarereader'].setup(() => {
     alert(err);
 });
 ```
+
+This will ask for location and microphone permission and then it will give QR  code reader. User can use this to scan qr code on Square Reader SDK developer portal to authorize
 
 Pair the reader POS system
 
@@ -58,6 +56,16 @@ window['squarereader'].startCheckout(params, () => {
     alert("Success!")
 }, (err) => {
     alert(err);
+});
+```
+
+## DeAuthorize
+
+```ts
+window['squarereader'].deauthorize(() => {
+alert("Success!")
+}, (err) => {
+alert(err);
 });
 ```
 
