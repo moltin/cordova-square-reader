@@ -1,9 +1,9 @@
 {
-  "name": "@moltin/cordova-plugin-square-reader",
+  "name": "@habibali/cordova-plugin-square-reader",
   "version": "0.2.0",
   "description": "Cordova Plugin to interface with the Square Reader SDK",
   "cordova": {
-    "id": "moltin-cordova-plugin-square-reader",
+    "id": "habibali-cordova-plugin-square-reader",
     "platforms": [
       "android",
       "ios"
@@ -14,7 +14,7 @@
     "cordova-android",
     "cordova-ios"
   ],
-  "author": "Craig Tweedy",
+  "author": "Habib Ali",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
