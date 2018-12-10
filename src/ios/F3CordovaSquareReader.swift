@@ -2,7 +2,7 @@ import SquareReaderSDK
 import CoreLocation
 import AVKit
 
-@objc(HabibAliCordovaSquareReader) class HabibAliCordovaSquareReader : CDVPlugin, SQRDCheckoutControllerDelegate, SQRDReaderSettingsControllerDelegate, CLLocationManagerDelegate,QRAuthorizationViewControllerDelegate {
+@objc(F3CordovaSquareReader) class F3CordovaSquareReader : CDVPlugin, SQRDCheckoutControllerDelegate, SQRDReaderSettingsControllerDelegate, CLLocationManagerDelegate,QRAuthorizationViewControllerDelegate {
     
     private lazy var locationManager = CLLocationManager()
     private var currentCommand: CDVInvokedUrlCommand?
