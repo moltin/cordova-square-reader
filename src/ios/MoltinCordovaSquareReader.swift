@@ -2,7 +2,7 @@ import SquareReaderSDK
 import CoreLocation
 import AVKit
 
-@objc(MoltinCordovaSquareReader) class MoltinCordovaSquareReader : CDVPlugin, SQRDCheckoutControllerDelegate, SQRDReaderSettingsControllerDelegate, CLLocationManagerDelegate {
+@objc(MoltinCordovaSquareReader) class MoltinCordovaSquareReader : CDVPlugin, SQRDCheckoutControllerDelegate, SQRDReaderSettingsControllerDelegate, CLLocationManagerDelegate,QRAuthorizationViewControllerDelegate {
     
     private lazy var locationManager = CLLocationManager()
     private var currentCommand: CDVInvokedUrlCommand?
@@ -12,6 +12,26 @@ import AVKit
     func setup(command: CDVInvokedUrlCommand) {
         
         self.locationManager.delegate = self
+        
+        func qrAuthorizationViewController(_ qrAuthorizationViewController: QRAuthorizationViewController, didRecognizeAuthorizationCode code: String) {
+            self.viewController.dismiss(animated: true, completion: nil)
+            
+            SQRDReaderSDK.shared.authorize(withCode: code) { location, error in
+                if let authError = error {
+                    // Handle the error
+                    print(authError)
+                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: authError.localizedDescription), callbackId: self.recentCommand!.callbackId)
+                }
+                else {
+                    // Proceed to the main application interface.
+                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: self.recentCommand!.callbackId)
+                }
+            }
+        }
+        
+        func qrAuthorizationViewControllerDidCancel(_ qrAuthorizationViewController: QRAuthorizationViewController) {
+            self.viewController.dismiss(animated: true, completion: nil)
+        }
         
         func requestLocationPermission(callback: @escaping (Bool) -> ()) {
             switch CLLocationManager.authorizationStatus() {
@@ -73,21 +93,11 @@ import AVKit
             print("Already authorized.")
             self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: command.callbackId)
         } else {
-            guard let commandParams = command.arguments.first as? [String: Any],
-                let authCode = commandParams["authCode"] as? String else {
-                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "No parameters"), callbackId: command.callbackId)
-                    return
-            }
-            SQRDReaderSDK.shared.authorize(withCode: authCode) { location, error in
-                if let authError = error {
-                    // Handle the error
-                    print(authError)
-                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: authError.localizedDescription), callbackId: command.callbackId)
-                }
-                else {
-                    // Proceed to the main application interface.
-                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: command.callbackId)
-                }
+            if (QRAuthorizationViewController.canScanQRCodes){
+                self.currentCommand = command
+                let qrAuthorizationViewController = QRAuthorizationViewController()
+                qrAuthorizationViewController.delegate = self
+                self.viewController.present(qrAuthorizationViewController, animated: true, completion: nil)
             }
         }
     }
@@ -126,6 +136,17 @@ import AVKit
         readerSettingsController.present(from: self.viewController)
     }
     
+    @objc(deauthorize:)
+    func deauthorize(command: CDVInvokedUrlCommand) {
+        SQRDReaderSDK.shared.deauthorize { (error) in
+            if (error == nil){
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: "Success"), callbackId: command.callbackId)
+            }
+            else{
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error?.localizedDescription), callbackId: command.callbackId)
+            }
+        }
+    }
     
     @objc(checkoutControllerDidCancel:)
     func checkoutControllerDidCancel(
