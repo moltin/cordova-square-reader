@@ -8,30 +8,30 @@ import AVKit
     private var currentCommand: CDVInvokedUrlCommand?
     private var locationPermissionCallback: ((Bool) -> ())?
     
+    func qrAuthorizationViewController(_ qrAuthorizationViewController: QRAuthorizationViewController, didRecognizeAuthorizationCode code: String) {
+        self.viewController.dismiss(animated: true, completion: nil)
+        
+        SQRDReaderSDK.shared.authorize(withCode: code) { location, error in
+            if let authError = error {
+                // Handle the error
+                print(authError)
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: authError.localizedDescription), callbackId: self.currentCommand!.callbackId)
+            }
+            else {
+                // Proceed to the main application interface.
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: self.currentCommand!.callbackId)
+            }
+        }
+    }
+    
+    func qrAuthorizationViewControllerDidCancel(_ qrAuthorizationViewController: QRAuthorizationViewController) {
+        self.viewController.dismiss(animated: true, completion: nil)
+    }
+    
     @objc(setup:)
     func setup(command: CDVInvokedUrlCommand) {
         
         self.locationManager.delegate = self
-        
-        func qrAuthorizationViewController(_ qrAuthorizationViewController: QRAuthorizationViewController, didRecognizeAuthorizationCode code: String) {
-            self.viewController.dismiss(animated: true, completion: nil)
-            
-            SQRDReaderSDK.shared.authorize(withCode: code) { location, error in
-                if let authError = error {
-                    // Handle the error
-                    print(authError)
-                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: authError.localizedDescription), callbackId: self.recentCommand!.callbackId)
-                }
-                else {
-                    // Proceed to the main application interface.
-                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: self.recentCommand!.callbackId)
-                }
-            }
-        }
-        
-        func qrAuthorizationViewControllerDidCancel(_ qrAuthorizationViewController: QRAuthorizationViewController) {
-            self.viewController.dismiss(animated: true, completion: nil)
-        }
         
         func requestLocationPermission(callback: @escaping (Bool) -> ()) {
             switch CLLocationManager.authorizationStatus() {
