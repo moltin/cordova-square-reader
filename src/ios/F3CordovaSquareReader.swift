@@ -43,7 +43,14 @@ import AVKit
             if locationSuccess {
                 requestMicrophonePermission() { microphoneSuccess in
                     if microphoneSuccess {
-                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: command.callbackId)
+                        var message = "authorized"
+                        if SQRDReaderSDK.shared.isAuthorized{
+                            message = "authorized"
+                        }
+                        else{
+                            message = "not authorized"
+                        }
+                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK,messageAs:message), callbackId: command.callbackId)
                         return
                     } else {
                         self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
@@ -93,9 +100,9 @@ import AVKit
     func startCheckout(command: CDVInvokedUrlCommand) {
         
         guard let commandParams = command.arguments.first as? [String: Any],
-                let amount = commandParams["amount"] as? Int else {
-            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "No parameters"), callbackId: command.callbackId)
-            return
+            let amount = commandParams["amount"] as? Int else {
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "No parameters"), callbackId: command.callbackId)
+                return
         }
         
         // Create an amount of money in the currency of the authorized Square account
