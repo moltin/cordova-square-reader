@@ -1,6 +1,6 @@
 {
   "name": "@f3/cordova-plugin-square-reader",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Cordova Plugin to interface with the Square Reader SDK",
   "cordova": {
     "id": "f3-cordova-plugin-square-reader",

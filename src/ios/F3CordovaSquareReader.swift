@@ -2,31 +2,12 @@ import SquareReaderSDK
 import CoreLocation
 import AVKit
 
-@objc(F3CordovaSquareReader) class F3CordovaSquareReader : CDVPlugin, SQRDCheckoutControllerDelegate, SQRDReaderSettingsControllerDelegate, CLLocationManagerDelegate,QRAuthorizationViewControllerDelegate {
+@objc(F3CordovaSquareReader) class F3CordovaSquareReader : CDVPlugin, SQRDCheckoutControllerDelegate, SQRDReaderSettingsControllerDelegate, CLLocationManagerDelegate {
     
     private lazy var locationManager = CLLocationManager()
     private var currentCommand: CDVInvokedUrlCommand?
     private var locationPermissionCallback: ((Bool) -> ())?
     
-    func qrAuthorizationViewController(_ qrAuthorizationViewController: QRAuthorizationViewController, didRecognizeAuthorizationCode code: String) {
-        self.viewController.dismiss(animated: true, completion: nil)
-        
-        SQRDReaderSDK.shared.authorize(withCode: code) { location, error in
-            if let authError = error {
-                // Handle the error
-                print(authError)
-                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: authError.localizedDescription), callbackId: self.currentCommand!.callbackId)
-            }
-            else {
-                // Proceed to the main application interface.
-                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: self.currentCommand!.callbackId)
-            }
-        }
-    }
-    
-    func qrAuthorizationViewControllerDidCancel(_ qrAuthorizationViewController: QRAuthorizationViewController) {
-        self.viewController.dismiss(animated: true, completion: nil)
-    }
     
     @objc(setup:)
     func setup(command: CDVInvokedUrlCommand) {
@@ -83,21 +64,27 @@ import AVKit
         }
     }
     
-    func retrieveAuthorizationCode(command: CDVInvokedUrlCommand) -> String {
-        return "sq0acp-bFfIC3wV9xKx0cAc_8aoMbMmUtb_j2BNpL2WR55sS6Y"
-    }
-    
     @objc(authorizeReaderSDKIfNeeded:)
     func authorizeReaderSDKIfNeeded(command: CDVInvokedUrlCommand) {
         if SQRDReaderSDK.shared.isAuthorized {
             print("Already authorized.")
             self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: command.callbackId)
         } else {
-            if (QRAuthorizationViewController.canScanQRCodes){
-                self.currentCommand = command
-                let qrAuthorizationViewController = QRAuthorizationViewController()
-                qrAuthorizationViewController.delegate = self
-                self.viewController.present(qrAuthorizationViewController, animated: true, completion: nil)
+            guard let commandParams = command.arguments.first as? [String: Any],
+                let authCode = commandParams["authCode"] as? String else {
+                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "No parameters"), callbackId: command.callbackId)
+                    return
+            }
+            SQRDReaderSDK.shared.authorize(withCode: authCode) { location, error in
+                if let authError = error {
+                    // Handle the error
+                    print(authError)
+                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: authError.localizedDescription), callbackId: command.callbackId)
+                }
+                else {
+                    // Proceed to the main application interface.
+                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: command.callbackId)
+                }
             }
         }
     }

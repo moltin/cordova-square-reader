@@ -5,8 +5,8 @@ F3CordovaSquareReader.prototype.setup = function (successCallback, errorCallback
   cordova.exec(successCallback, errorCallback, "F3CordovaSquareReader", "setup", []);
 };
 
-F3CordovaSquareReader.prototype.authorizeReaderSDKIfNeeded = function (successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, "F3CordovaSquareReader", "authorizeReaderSDKIfNeeded", []);
+F3CordovaSquareReader.prototype.authorizeReaderSDKIfNeeded = function (params,successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "F3CordovaSquareReader", "authorizeReaderSDKIfNeeded", [params]);
 };
 
 F3CordovaSquareReader.prototype.startCheckout = function (params, successCallback, errorCallback) {
