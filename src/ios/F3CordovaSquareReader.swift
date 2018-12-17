@@ -170,7 +170,7 @@ import AVKit
         guard let currentCommand = self.currentCommand else {
             return
         }
-        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: currentCommand.callbackId)
+        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs:result.transactionID), callbackId: currentCommand.callbackId)
         self.currentCommand = nil
     }
     
