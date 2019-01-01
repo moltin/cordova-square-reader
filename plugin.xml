@@ -12,6 +12,9 @@
     </js-module>
 
     <platform name="ios">
+        <hook type="after_plugin_install" src="hooks/addSquareInit.js" />
+        <hook type="before_plugin_uninstall" src="hooks/removeSquareInit.js" />
+
         <config-file target="config.xml" parent="/*">
             <feature name="MoltinCordovaSquareReader">
                 <param name="ios-package" value="MoltinCordovaSquareReader" />
