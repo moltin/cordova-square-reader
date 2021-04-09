@@ -2,11 +2,12 @@ import SquareReaderSDK
 import CoreLocation
 import AVKit
 
-@objc(MoltinCordovaSquareReader) class MoltinCordovaSquareReader : CDVPlugin, SQRDCheckoutControllerDelegate, SQRDReaderSettingsControllerDelegate, CLLocationManagerDelegate {
+@objc(F3CordovaSquareReader) class F3CordovaSquareReader : CDVPlugin, SQRDCheckoutControllerDelegate, SQRDReaderSettingsControllerDelegate, CLLocationManagerDelegate {
     
     private lazy var locationManager = CLLocationManager()
     private var currentCommand: CDVInvokedUrlCommand?
     private var locationPermissionCallback: ((Bool) -> ())?
+    
     
     @objc(setup:)
     func setup(command: CDVInvokedUrlCommand) {
@@ -42,7 +43,14 @@ import AVKit
             if locationSuccess {
                 requestMicrophonePermission() { microphoneSuccess in
                     if microphoneSuccess {
-                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: command.callbackId)
+                        var message = "authorized"
+                        if SQRDReaderSDK.shared.isAuthorized{
+                            message = "authorized"
+                        }
+                        else{
+                            message = "not authorized"
+                        }
+                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK,messageAs:message), callbackId: command.callbackId)
                         return
                     } else {
                         self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
@@ -61,10 +69,6 @@ import AVKit
         } else if status == .restricted || status == .denied {
             self.locationPermissionCallback?(false)
         }
-    }
-    
-    func retrieveAuthorizationCode(command: CDVInvokedUrlCommand) -> String {
-        return "sq0acp-bFfIC3wV9xKx0cAc_8aoMbMmUtb_j2BNpL2WR55sS6Y"
     }
     
     @objc(authorizeReaderSDKIfNeeded:)
@@ -96,9 +100,9 @@ import AVKit
     func startCheckout(command: CDVInvokedUrlCommand) {
         
         guard let commandParams = command.arguments.first as? [String: Any],
-                let amount = commandParams["amount"] as? Int else {
-            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "No parameters"), callbackId: command.callbackId)
-            return
+            let amount = commandParams["amount"] as? Int else {
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "No parameters"), callbackId: command.callbackId)
+                return
         }
         
         // Create an amount of money in the currency of the authorized Square account
@@ -126,6 +130,17 @@ import AVKit
         readerSettingsController.present(from: self.viewController)
     }
     
+    @objc(deauthorize:)
+    func deauthorize(command: CDVInvokedUrlCommand) {
+        SQRDReaderSDK.shared.deauthorize { (error) in
+            if (error == nil){
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: "Success"), callbackId: command.callbackId)
+            }
+            else{
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error?.localizedDescription), callbackId: command.callbackId)
+            }
+        }
+    }
     
     @objc(checkoutControllerDidCancel:)
     func checkoutControllerDidCancel(
@@ -155,7 +170,7 @@ import AVKit
         guard let currentCommand = self.currentCommand else {
             return
         }
-        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: currentCommand.callbackId)
+        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs:result.transactionID), callbackId: currentCommand.callbackId)
         self.currentCommand = nil
     }
     
